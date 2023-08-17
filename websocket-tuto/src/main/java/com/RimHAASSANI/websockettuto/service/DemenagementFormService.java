@@ -11,14 +11,30 @@ import java.util.List;
 public class DemenagementFormService {
 
     @Autowired
+    private WebSocketService webSocketService;
+    @Autowired
     private DemenagementFormRepository demenagementFormRepository;
 
 
     public DemenagementFormEntity addDemenagementForm(DemenagementFormEntity demenagementFormEntity) {
-        return  demenagementFormRepository.save(demenagementFormEntity);
+        DemenagementFormEntity demenagementForm  =  demenagementFormRepository.save(demenagementFormEntity);
+        notifyFrontend();
+        return demenagementForm;
     }
 
     public List<DemenagementFormEntity> getDemenagementForm() {
         return demenagementFormRepository.findAll();
+    }
+    protected String getEntityTopic(){
+        return "add-demande";
+    }
+    public void notifyFrontend(){
+        final String entityTopic = getEntityTopic();
+        if(entityTopic==null){
+
+            return;
+        }
+        webSocketService.sendMessage(entityTopic);
+
     }
 }
